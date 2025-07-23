@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Employment CBT</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #e5f5ec;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    h2, h3 {
+      color: #075e54;
+    }
+    #quiz-screen, #result-screen {
+      display: none;
+    }
+    button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      width: 100%;
+      background-color: #25d366;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #128c7e;
+    }
+    #admin-reset {
+      margin-top: 20px;
+      display: none;
+      background-color: #ff5252;
+    }
+    .timer {
+      font-weight: bold;
+      color: #ff5722;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="start-screen">
+    <h2>Welcome to the Employment CBT</h2>
+    <p>Enter your full name to begin:</p>
+    <input type="text" id="username" placeholder="Enter your name" />
+    <br />
+    <button onclick="startCBT()">Start CBT</button>
+  </div>
+
+  <div id="quiz-screen">
+    <h3 id="question-number"></h3>
+    <p id="question-text"></p>
+    <div id="options"></div>
+    <p class="timer">Time left: <span id="time-left">5</span> seconds</p>
+  </div>
+
+  <div id="result-screen">
+    <h3>CBT Completed</h3>
+    <p>Name: <span id="user-final-name"></span></p>
+    <p>Your Score: <span id="score"></span></p>
+  </div>
+
+  <button id="admin-reset" onclick="resetCBT()">🔐 Reset CBT</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
