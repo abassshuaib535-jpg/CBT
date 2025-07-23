@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Computer-Based Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+    }
+
+    #login-form {
+      width: 300px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #login-form input[type="text"],
+    #login-form input[type="password"] {
+      width: 100%;
+      height: 40px;
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+
+    #login-form button[type="submit"] {
+      width: 100%;
+      height: 40px;
+      background-color: #4CAF50;
+      color: #fff;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #login-form button[type="submit"]:hover {
+      background-color: #3e8e41;
+    }
+
+    #test-container {
+      width: 80%;
+      margin: 40px auto;
+      background-color: #fff;
+      padding: 20px;
+      border: 1px solid #ddd;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #test-container h2 {
+      margin-top: 0;
+    }
+
+    #test-container ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #test-container li {
+      margin-bottom: 10px;
+    }
+
+    #test-container input[type="radio"] {
+      margin-right: 10px;
+    }
+
+    #submit-btn {
+      display: block;
+      margin: 20px 0;
+      width: 100%;
+      height: 40px;
+      background-color: #2196F3;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #submit-btn:hover {
+      background-color: #3e8e41;
+    }
+
+    #score {
+      font-size: 20px;
+      font-weight: bold;
+      color: green;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<h1 style="text-align: center; color: #4CAF50;">Computer-Based Test</h1>
+
+<form id="login-form">
+  <label for="username">Username:</label>
+  <input type="text" id="username" name="username">
+
+  <label for="password">Password:</label>
+  <input type="password" id="password" name="password">
+
+  <button type="submit" id="login-button">Login</button>
+</form>
+
+<div id="test-container"></div>
+
+  <script>
+  const students = [
+    { id: 1, username: 'A', password: '1' },
+    { id: 2, username: 'student2', password: 'password2' },
+    { id: 3, username: 'student3', password: 'password3' },
+    { id: 4, username: 'student4', password: 'password4' },
+    { id: 5, username: 'student5', password: 'password5' }
+  ];
+
+  const loginForm = document.getElementById('login-form');
+  const loginButton = document.getElementById('login-button');
+  const testContainer = document.getElementById('test-container');
+
+  const testQuestions = [
+    {
+      question: 'What is the capital of France?',
+      answers: ['Paris', 'London', 'Berlin', 'Rome'],
+      correctAnswer: 0
+    },
+    {
+      question: 'What is the largest planet in our solar system?',
+      answers: ['Earth', 'Saturn', 'Jupiter', 'Uranus'],
+      correctAnswer: 2
+    }
+  ];
+
+  let timerInterval;
+
+  loginButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    const authenticatedStudent = students.find(student =>
+      student.username === username && student.password === password
+    );
+
+    if (authenticatedStudent) {
+      loginForm.style.display = 'none';
+      renderTestQuestions();
+      startTimer(1 * 60); // 1  minutes
+    } else {
+      alert('Invalid username or password!');
+    }
+  });
+
+  function renderTestQuestions() {
+    testContainer.innerHTML = '<h2>Answer the following questions:</h2><div id="timer" style="color:red;font-weight:bold;">Time Left: </div>';
+
+    testQuestions.forEach((question, index) => {
+      const questionElement = document.createElement('div');
+      questionElement.innerHTML = `
+        <h3>Question ${index + 1}</h3>
+        <p>${question.question}</p>
+        <ul>
+          ${question.answers.map((answer, answerIndex) => `
+            <li>
+              <input type="radio" id="answer-${index}-${answerIndex}" name="answer-${index}" value="${answerIndex}">
+              <label for="answer-${index}-${answerIndex}">${answer}</label>
+            </li>
+          `).join('')}
+        </ul>
+      `;
+      testContainer.appendChild(questionElement);
+    });
+
+    const submitButton = document.createElement('button');
+    submitButton.id = 'submit-btn';
+    submitButton.textContent = 'Submit Answers';
+    testContainer.appendChild(submitButton);
+    submitButton.addEventListener('click', finishTestManually);
+  }
+
+  function finishTestManually() {
+    clearInterval(timerInterval);
+    calculateScore();
+  }
+
+  function calculateScore() {
+    let score = 0;
+    testQuestions.forEach((question, index) => {
+      const selected = document.querySelector(`input[name="answer-${index}"]:checked`);
+      if (selected && parseInt(selected.value) === question.correctAnswer) {
+        score++;
+      }
+    });
+
+    const total = testQuestions.length;
+    const result = document.createElement('div');
+    result.id = 'score';
+    result.innerHTML = `<br><strong>You scored ${score} out of ${total}.</strong>`;
+    testContainer.appendChild(result);
+
+    // Disable all inputs
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+      radio.disabled = true;
+    });
+
+    // Disable submit button
+    const submitButton = document.getElementById('submit-btn');
+    if (submitButton) submitButton.disabled = true;
+  }
+
+  function startTimer(durationInSeconds) {
+    let timeLeft = durationInSeconds;
+    const timerDisplay = document.getElementById('timer');
+
+    function updateTimer() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      timerDisplay.textContent = `Time Left: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        alert("Time's up! Auto-submitting your test.");
+        calculateScore();
+      }
+
+      timeLeft--;
+    }
+
+    updateTimer(); // run immediately
+    timerInterval = setInterval(updateTimer, 1000); // run every second
+  }
+</script>
